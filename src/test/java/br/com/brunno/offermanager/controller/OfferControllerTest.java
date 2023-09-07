@@ -1,16 +1,17 @@
 package br.com.brunno.offermanager.controller;
 
 import br.com.brunno.offermanager.domain.entity.Offer;
+import br.com.brunno.offermanager.domain.entity.OfferExclusiveRelation;
 import br.com.brunno.offermanager.domain.service.OfferService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,7 +43,7 @@ public class OfferControllerTest {
         mockMvc.perform(get("/offer/{id}", OFFER_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(OFFER_ID))
-                .andExpect(jsonPath("key").value(OFFER_KEY));
+                .andExpect(jsonPath("offerKey").value(OFFER_KEY));
     }
 
     @Test
@@ -54,5 +55,16 @@ public class OfferControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(OM.writeValueAsString(createOfferPayload)))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void getOfferExclusiveRelationFromOfferKeyShouldReturn200() throws Exception {
+        OfferExclusiveRelation aRelation = new OfferExclusiveRelation();
+        aRelation.setOffersRelated(List.of(new Offer(2L, "bbb")));
+        doReturn(aRelation).when(offerService).getRelatedOffersToOffer("aaa");
+
+        mockMvc.perform(get("/offer/{key}/exclusive-relation", "aaa"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("offersRelated").isArray());
     }
 }
