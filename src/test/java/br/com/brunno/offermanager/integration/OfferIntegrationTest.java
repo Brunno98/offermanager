@@ -1,30 +1,23 @@
 package br.com.brunno.offermanager.integration;
 
-import br.com.brunno.offermanager.controller.CreateOfferPayload;
-import br.com.brunno.offermanager.controller.OfferResponseDto;
 import br.com.brunno.offermanager.controller.dto.CreateExclusiveRelationOfferDto;
+import br.com.brunno.offermanager.controller.dto.CreateOfferPayload;
 import br.com.brunno.offermanager.controller.dto.OfferExclusiveRelationResponseDto;
+import br.com.brunno.offermanager.controller.dto.OfferResponseDto;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.repository.OfferRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 import java.util.Map;
 
-import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 

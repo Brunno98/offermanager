@@ -1,5 +1,6 @@
 package br.com.brunno.offermanager.controller;
 
+import br.com.brunno.offermanager.controller.dto.CreateOfferPayload;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.entity.OfferExclusiveRelation;
 import br.com.brunno.offermanager.domain.service.OfferService;

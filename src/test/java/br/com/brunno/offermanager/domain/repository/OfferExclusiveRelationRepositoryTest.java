@@ -2,18 +2,20 @@ package br.com.brunno.offermanager.domain.repository;
 
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.entity.OfferExclusiveRelationORM;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 @DataJpaTest
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class OfferExclusiveRelationRepositoryTest {
 
     @Autowired
@@ -48,6 +50,7 @@ public class OfferExclusiveRelationRepositoryTest {
         List<Offer> relatedOffers = offerExclusiveRelationRepository.getRelatedOffersFromOfferKey("aaa");
 
         assertThat(relatedOffers.get(0).getOfferKey(), equalTo("bbb"));
+
     }
 
     @Test

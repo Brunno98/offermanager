@@ -1,11 +1,10 @@
-package br.com.brunno.offermanager.controller;
+package br.com.brunno.offermanager.controller.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class OfferResponseDto {
-    private Long id;
+public class CreateOfferPayload {
     private String offerKey;
 }
