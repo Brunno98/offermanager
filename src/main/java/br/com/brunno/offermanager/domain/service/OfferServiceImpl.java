@@ -1,6 +1,7 @@
 package br.com.brunno.offermanager.domain.service;
 
 
+import br.com.brunno.offermanager.domain.Exceptions.RelationAlreadyExistsException;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.entity.OfferExclusiveRelation;
 import br.com.brunno.offermanager.domain.repository.OfferExclusiveRelationRepository;
@@ -45,6 +46,11 @@ public class OfferServiceImpl implements OfferService{
     public void createRelation(String offerKey, List<String> relatedOffers) {
         Offer offer = offerRepository.findByOfferKey(offerKey).orElseThrow(() -> new RuntimeException("Offer Not Found"));
         for (String otherOfferKey : relatedOffers) {
+            var relation = offerExclusiveRelationRepository.findRelationBetweenOffers(offerKey, otherOfferKey);
+            if (!relation.isEmpty()) {
+                log.warn("Relation between {} and {} already exists!", offerKey, otherOfferKey);
+                continue;
+            }
             Optional<Offer> possibleOffer = offerRepository.findByOfferKey(otherOfferKey);
             if (possibleOffer.isEmpty())
                 continue;

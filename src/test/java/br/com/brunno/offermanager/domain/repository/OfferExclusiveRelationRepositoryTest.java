@@ -11,7 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 @DataJpaTest
@@ -69,5 +69,22 @@ public class OfferExclusiveRelationRepositoryTest {
         Offer relatedOffer = relateds.get(0);
 
         assertThat(relatedOffer.getOfferKey(), equalTo("bbb"));
+    }
+
+    @Test
+    void findRelationBetweenOffers() {
+        Offer[] offers = new Offer[]{
+                new Offer(null, "aaa"),
+                new Offer(null, "bbb"),
+        };
+        for (Offer offer : offers)
+            entityManager.persist(offer);
+
+        String uuid = "ac7ecdfb-66bf-473a-ab52-dba293985b7b";
+        offerExclusiveRelationRepository.createRelationForOffers(offers[0].getId(), offers[1].getId(), uuid);
+
+        var relations = offerExclusiveRelationRepository.findRelationBetweenOffers(offers[0].getOfferKey(), offers[1].getOfferKey());
+
+        assertThat(relations, hasSize(2));
     }
 }
