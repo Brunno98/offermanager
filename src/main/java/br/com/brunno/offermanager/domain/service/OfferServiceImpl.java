@@ -1,9 +1,9 @@
 package br.com.brunno.offermanager.domain.service;
 
 
-import br.com.brunno.offermanager.domain.Exceptions.RelationAlreadyExistsException;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.entity.OfferExclusiveRelation;
+import br.com.brunno.offermanager.domain.exceptions.OfferNotFoundException;
 import br.com.brunno.offermanager.domain.repository.OfferExclusiveRelationRepository;
 import br.com.brunno.offermanager.domain.repository.OfferRepository;
 import jakarta.transaction.Transactional;
@@ -25,7 +25,7 @@ public class OfferServiceImpl implements OfferService{
 
     @Override
     public Offer getById(Long id) {
-        return offerRepository.findById(id).orElseThrow(() -> new RuntimeException("Offer not found"));
+        return offerRepository.findById(id).orElseThrow(() -> new OfferNotFoundException("Offer not found"));
     }
 
     @Override
