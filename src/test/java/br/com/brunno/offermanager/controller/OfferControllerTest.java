@@ -61,7 +61,7 @@ public class OfferControllerTest {
     void getOfferExclusiveRelationFromOfferKeyShouldReturn200() throws Exception {
         doReturn(List.of(new Offer(2L, "bbb"))).when(offerService).getRelatedOffersToOffer("aaa");
 
-        mockMvc.perform(get("/offer/{key}/exclusive-relation", "aaa"))
+        mockMvc.perform(get("/offer/{key}/unicity-relation", "aaa"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("offersRelated").isArray())
                 .andExpect(jsonPath("offersRelated[0].offerKey").value("bbb"));

@@ -64,11 +64,11 @@ public class OfferIntegrationTest {
         createUnicityOfferRelationDto.setOffer("aaa");
         createUnicityOfferRelationDto.setRelateWith(List.of("bbb"));
         ResponseEntity<CreateUnicityOfferRelationDto> postReponse = restTemplate
-                .postForEntity("/offer/exclusive-relation", createUnicityOfferRelationDto, CreateUnicityOfferRelationDto.class);
+                .postForEntity("/offer/unicity-relation", createUnicityOfferRelationDto, CreateUnicityOfferRelationDto.class);
         assertThat(postReponse.getStatusCode(), equalTo(HttpStatus.CREATED));
 
         ResponseEntity<OfferUnicityRelationResponse> getResponse = restTemplate
-                .getForEntity("/offer/{key}/exclusive-relation", OfferUnicityRelationResponse.class, Map.of("key", "aaa"));
+                .getForEntity("/offer/{key}/unicity-relation", OfferUnicityRelationResponse.class, Map.of("key", "aaa"));
         assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(getResponse.getBody().getOffersRelated().get(0).getOfferKey(), equalTo("bbb"));
     }

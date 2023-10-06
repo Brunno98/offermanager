@@ -38,8 +38,8 @@ public class OfferController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{key}/exclusive-relation")
-    public ResponseEntity<OfferUnicityRelationResponse> getExclusiveOffersRelatedToOffer(@PathVariable String key) {
+    @GetMapping("/{key}/unicity-relation")
+    public ResponseEntity<OfferUnicityRelationResponse> getOffersUnicityRelatedToOffer(@PathVariable String key) {
         List<Offer> offers = offerService.getRelatedOffersToOffer(key);
 
         List<OfferResponseDto> offersDto = new ArrayList<>();
@@ -55,7 +55,7 @@ public class OfferController {
         return ResponseEntity.ok(offerUnicityRelationResponse);
     }
 
-    @PostMapping("/exclusive-relation")
+    @PostMapping("/unicity-relation")
     public ResponseEntity<?> createRelation(@RequestBody CreateUnicityOfferRelationDto createRelationsDto) {
         offerService.createRelation(createRelationsDto.getOffer(), createRelationsDto.getRelateWith());
         return ResponseEntity.status(HttpStatus.CREATED).build();
