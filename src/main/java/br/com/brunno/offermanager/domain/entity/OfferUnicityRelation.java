@@ -28,10 +28,6 @@ public class OfferUnicityRelation {
         this.offers = new ArrayList<>();
     }
 
-    public void setOfferId(Long id) {
-
-    }
-
     public Offer getOfferRelatedWith(String key) {
         return offers.stream().filter(o -> !o.getOfferKey().equals(key)).findFirst()
                 .orElseThrow(() -> new RuntimeException(
@@ -44,5 +40,11 @@ public class OfferUnicityRelation {
             throw new RuntimeException("cannot add more than 2 offers in some unicity relation");
 
         offers.add(offer);
+    }
+
+    public boolean hasOfferKey(String offerKey) {
+        if (offerKey == null) return false;
+
+        return offers.stream().anyMatch(o -> offerKey.equals(o.getOfferKey()));
     }
 }

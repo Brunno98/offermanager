@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -30,7 +31,6 @@ public class Offer {
     }
 
     public boolean hasUnicityRelationWith(String offerKey) {
-        //TODO: verifica se key informada está na lista de relacoes
-        return false;
+        return unicityRelations.stream().anyMatch(r -> r.hasOfferKey(offerKey));
     }
 }
