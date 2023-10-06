@@ -1,8 +1,8 @@
 package br.com.brunno.offermanager.integration;
 
-import br.com.brunno.offermanager.controller.dto.CreateExclusiveRelationOfferDto;
+import br.com.brunno.offermanager.controller.dto.CreateUnicityOfferRelationDto;
 import br.com.brunno.offermanager.controller.dto.CreateOfferPayload;
-import br.com.brunno.offermanager.controller.dto.OfferExclusiveRelationResponseDto;
+import br.com.brunno.offermanager.controller.dto.OfferUnicityRelationResponse;
 import br.com.brunno.offermanager.controller.dto.OfferResponseDto;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.repository.OfferRepository;
@@ -50,7 +50,7 @@ public class OfferIntegrationTest {
     }
 
     @Test
-    void getExclusiveRelatedOffersFromOffer() {
+    void getUnicityRelationFromOffer() {
         for (Offer offer : new Offer[]{
                 new Offer(null, "aaa"),
                 new Offer(null, "bbb"),
@@ -60,13 +60,15 @@ public class OfferIntegrationTest {
             offerRepository.save(offer);
         }
 
-        CreateExclusiveRelationOfferDto createExclusiveRelationOfferDto = new CreateExclusiveRelationOfferDto();
-        createExclusiveRelationOfferDto.setOffer("aaa");
-        createExclusiveRelationOfferDto.setRelateWith(List.of("bbb"));
-        ResponseEntity<CreateExclusiveRelationOfferDto> postReponse = restTemplate.postForEntity("/offer/exclusive-relation", createExclusiveRelationOfferDto, CreateExclusiveRelationOfferDto.class);
+        CreateUnicityOfferRelationDto createUnicityOfferRelationDto = new CreateUnicityOfferRelationDto();
+        createUnicityOfferRelationDto.setOffer("aaa");
+        createUnicityOfferRelationDto.setRelateWith(List.of("bbb"));
+        ResponseEntity<CreateUnicityOfferRelationDto> postReponse = restTemplate
+                .postForEntity("/offer/exclusive-relation", createUnicityOfferRelationDto, CreateUnicityOfferRelationDto.class);
         assertThat(postReponse.getStatusCode(), equalTo(HttpStatus.CREATED));
 
-        ResponseEntity<OfferExclusiveRelationResponseDto> getResponse = restTemplate.getForEntity("/offer/{key}/exclusive-relation", OfferExclusiveRelationResponseDto.class, Map.of("key", "aaa"));
+        ResponseEntity<OfferUnicityRelationResponse> getResponse = restTemplate
+                .getForEntity("/offer/{key}/exclusive-relation", OfferUnicityRelationResponse.class, Map.of("key", "aaa"));
         assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(getResponse.getBody().getOffersRelated().get(0).getOfferKey(), equalTo("bbb"));
     }

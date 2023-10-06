@@ -2,7 +2,6 @@ package br.com.brunno.offermanager.controller;
 
 import br.com.brunno.offermanager.controller.dto.CreateOfferPayload;
 import br.com.brunno.offermanager.domain.entity.Offer;
-import br.com.brunno.offermanager.domain.entity.OfferExclusiveRelation;
 import br.com.brunno.offermanager.domain.service.OfferService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -60,12 +59,11 @@ public class OfferControllerTest {
 
     @Test
     void getOfferExclusiveRelationFromOfferKeyShouldReturn200() throws Exception {
-        OfferExclusiveRelation aRelation = new OfferExclusiveRelation();
-        aRelation.setOffersRelated(List.of(new Offer(2L, "bbb")));
-        doReturn(aRelation).when(offerService).getRelatedOffersToOffer("aaa");
+        doReturn(List.of(new Offer(2L, "bbb"))).when(offerService).getRelatedOffersToOffer("aaa");
 
         mockMvc.perform(get("/offer/{key}/exclusive-relation", "aaa"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("offersRelated").isArray());
+                .andExpect(jsonPath("offersRelated").isArray())
+                .andExpect(jsonPath("offersRelated[0].offerKey").value("bbb"));
     }
 }

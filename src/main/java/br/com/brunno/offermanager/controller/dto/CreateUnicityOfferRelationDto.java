@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CreateExclusiveRelationOfferDto {
+public class CreateUnicityOfferRelationDto {
     private String offer;
     private List<String> relateWith;
 }

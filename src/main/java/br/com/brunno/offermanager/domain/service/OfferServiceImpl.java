@@ -2,18 +2,18 @@ package br.com.brunno.offermanager.domain.service;
 
 
 import br.com.brunno.offermanager.domain.entity.Offer;
-import br.com.brunno.offermanager.domain.entity.OfferExclusiveRelation;
+import br.com.brunno.offermanager.domain.entity.OfferUnicityRelation;
 import br.com.brunno.offermanager.domain.exceptions.OfferNotFoundException;
-import br.com.brunno.offermanager.domain.repository.OfferExclusiveRelationRepository;
 import br.com.brunno.offermanager.domain.repository.OfferRepository;
+import br.com.brunno.offermanager.domain.repository.OfferUnicityRelationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -21,7 +21,7 @@ import java.util.UUID;
 public class OfferServiceImpl implements OfferService{
 
     private final OfferRepository offerRepository;
-    private final OfferExclusiveRelationRepository offerExclusiveRelationRepository;
+    private final OfferUnicityRelationRepository offerUnicityRelationRepository;
 
     @Override
     public Offer getById(Long id) {
@@ -34,11 +34,16 @@ public class OfferServiceImpl implements OfferService{
     }
 
     @Override
-    public OfferExclusiveRelation getRelatedOffersToOffer(String key) {
-        List<Offer> relatedOffers = offerExclusiveRelationRepository.getRelatedOffersFromOfferKey(key);
-        OfferExclusiveRelation offerExclusiveRelation = new OfferExclusiveRelation();
-        offerExclusiveRelation.setOffersRelated(relatedOffers);
-        return offerExclusiveRelation;
+    public List<Offer> getRelatedOffersToOffer(String key) {
+        Offer offer = offerRepository.findByOfferKey(key).orElseThrow(() -> new RuntimeException("Offer not found"));
+        List<OfferUnicityRelation> unicityRelations = offer.getUnicityRelations();
+
+        List<Offer> relatedOffers = new ArrayList<>();
+        for (OfferUnicityRelation relation : unicityRelations) {
+            Offer relatedOffer = relation.getOfferRelatedWith(key);
+            relatedOffers.add(relatedOffer);
+        }
+        return relatedOffers;
     }
 
     @Transactional
@@ -46,19 +51,18 @@ public class OfferServiceImpl implements OfferService{
     public void createRelation(String offerKey, List<String> relatedOffers) {
         Offer offer = offerRepository.findByOfferKey(offerKey).orElseThrow(() -> new RuntimeException("Offer Not Found"));
         for (String otherOfferKey : relatedOffers) {
-            var relation = offerExclusiveRelationRepository.findRelationBetweenOffers(offerKey, otherOfferKey);
-            if (!relation.isEmpty()) {
+            if (offer.hasUnicityRelationWith(otherOfferKey)) {
                 log.warn("Relation between {} and {} already exists!", offerKey, otherOfferKey);
                 continue;
             }
             Optional<Offer> possibleOffer = offerRepository.findByOfferKey(otherOfferKey);
             if (possibleOffer.isEmpty())
                 continue;
-            String uuid = UUID.randomUUID().toString();
-            Offer otherOffer = possibleOffer.get();
-            log.info("Offer 1 id: {}", offer.getId());
-            log.info("Offer 2 id: {}", otherOffer.getId());
-            offerExclusiveRelationRepository.createRelationForOffers(offer.getId(), otherOffer.getId(), uuid);
+            OfferUnicityRelation unicityRelation = new OfferUnicityRelation();
+            unicityRelation.addOffer(offer);
+            unicityRelation.addOffer(possibleOffer.get());
+
+            offerUnicityRelationRepository.save(unicityRelation);
         }
     }
 }
