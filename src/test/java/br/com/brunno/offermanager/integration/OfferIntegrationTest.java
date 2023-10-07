@@ -24,7 +24,10 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 public class OfferIntegrationTest {
-    public static final  ObjectMapper OM = new ObjectMapper();
+    public static final String UNICITY_RELATION_URI = "/offer/unicity-relation";
+    public static final String CREATE_UNICIITY_RELATION_URI = "/offer/{key}/unicity-relation";
+    public static final String OFFER_KEY = "aaa";
+    public static final String OTHER_OFFER_KEY = "bbb";
 
     @Autowired
     TestRestTemplate restTemplate;
@@ -35,7 +38,7 @@ public class OfferIntegrationTest {
     @Test
     void CreateOffer() {
         CreateOfferPayload createPayload = new CreateOfferPayload();
-        createPayload.setOfferKey("aaa");
+        createPayload.setOfferKey(OFFER_KEY);
 
         ResponseEntity<CreateOfferPayload> createResponse = restTemplate.postForEntity("/offer", createPayload, CreateOfferPayload.class);
 
@@ -46,30 +49,32 @@ public class OfferIntegrationTest {
 
         assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(getResponse.getBody().getId(), equalTo(1L));
-        assertThat(getResponse.getBody().getOfferKey(), equalTo("aaa"));
+        assertThat(getResponse.getBody().getOfferKey(), equalTo(OFFER_KEY));
     }
 
     @Test
     void getUnicityRelationFromOffer() {
-        for (Offer offer : new Offer[]{
-                new Offer(null, "aaa"),
-                new Offer(null, "bbb"),
-                new Offer(null, "ccc"),
-                new Offer(null, "ddd")
-        }) {
-            offerRepository.save(offer);
-        }
+        populateBaseWithOffers(OFFER_KEY, OTHER_OFFER_KEY);
 
         CreateUnicityOfferRelationDto createUnicityOfferRelationDto = new CreateUnicityOfferRelationDto();
-        createUnicityOfferRelationDto.setOffer("aaa");
-        createUnicityOfferRelationDto.setRelateWith(List.of("bbb"));
+        createUnicityOfferRelationDto.setOffer(OFFER_KEY);
+        createUnicityOfferRelationDto.setRelateWith(List.of(OTHER_OFFER_KEY));
+
         ResponseEntity<CreateUnicityOfferRelationDto> postReponse = restTemplate
-                .postForEntity("/offer/unicity-relation", createUnicityOfferRelationDto, CreateUnicityOfferRelationDto.class);
+                .postForEntity(UNICITY_RELATION_URI, createUnicityOfferRelationDto, CreateUnicityOfferRelationDto.class);
         assertThat(postReponse.getStatusCode(), equalTo(HttpStatus.CREATED));
 
         ResponseEntity<OfferUnicityRelationResponse> getResponse = restTemplate
-                .getForEntity("/offer/{key}/unicity-relation", OfferUnicityRelationResponse.class, Map.of("key", "aaa"));
+                .getForEntity(CREATE_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
+
         assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(getResponse.getBody().getOffersRelated().get(0).getOfferKey(), equalTo("bbb"));
+        assertThat(getResponse.getBody().getOffersRelated().get(0).getOfferKey(), equalTo(OTHER_OFFER_KEY));
     }
+
+    private void populateBaseWithOffers(String... offerKeys) {
+        for (String key : offerKeys) {
+            offerRepository.save(new Offer(null, key));
+        }
+    }
+
 }
