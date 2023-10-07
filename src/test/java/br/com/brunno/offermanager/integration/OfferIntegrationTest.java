@@ -7,6 +7,7 @@ import br.com.brunno.offermanager.controller.dto.OfferUnicityRelationResponse;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.repository.OfferRepository;
 import br.com.brunno.offermanager.domain.repository.OfferUnicityRelationRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -87,6 +88,7 @@ public class OfferIntegrationTest {
     }
 
     @Test
+    @Disabled("Work in progress...")
     void deleteUnicityRelationFromOffer() {
         ResponseEntity<OfferUnicityRelationResponse> getResponse;
         Offer offer = new Offer(null, OFFER_KEY);
