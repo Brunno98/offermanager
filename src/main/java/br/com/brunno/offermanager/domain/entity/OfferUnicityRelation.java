@@ -28,6 +28,19 @@ public class OfferUnicityRelation {
         this.offers = new ArrayList<>();
     }
 
+    private OfferUnicityRelation(Offer first, Offer second) {
+        this.offers = new ArrayList<>();
+        this.offers.add(first);
+        this.offers.add(second);
+    }
+
+    public static OfferUnicityRelation createRelationBetween(Offer offer, Offer otherOffer) {
+        OfferUnicityRelation unicityRelation = new OfferUnicityRelation(offer, otherOffer);
+        offer.addUnicityRelation(unicityRelation);
+        otherOffer.addUnicityRelation(unicityRelation);
+        return unicityRelation;
+    }
+
     public Offer getOfferRelatedWith(String key) {
         return offers.stream().filter(o -> !o.getOfferKey().equals(key)).findFirst()
                 .orElseThrow(() -> new RuntimeException(

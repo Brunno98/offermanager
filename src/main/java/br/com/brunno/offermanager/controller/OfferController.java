@@ -1,9 +1,6 @@
 package br.com.brunno.offermanager.controller;
 
-import br.com.brunno.offermanager.controller.dto.CreateOfferPayload;
-import br.com.brunno.offermanager.controller.dto.CreateUnicityOfferRelationDto;
-import br.com.brunno.offermanager.controller.dto.OfferResponseDto;
-import br.com.brunno.offermanager.controller.dto.OfferUnicityRelationResponse;
+import br.com.brunno.offermanager.controller.dto.*;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.service.OfferService;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +39,13 @@ public class OfferController {
     public ResponseEntity<OfferUnicityRelationResponse> getOffersUnicityRelatedToOffer(@PathVariable String key) {
         List<Offer> offers = offerService.getRelatedOffersToOffer(key);
 
-        List<OfferResponseDto> offersDto = new ArrayList<>();
+        List<UnicityRelationResponse> offersDto = new ArrayList<>();
         for (Offer offer : offers) {
-            OfferResponseDto offerDto = new OfferResponseDto();
-            BeanUtils.copyProperties(offer, offerDto);
-            offersDto.add(offerDto);
+            UnicityRelationResponse  unicityRelationResponse = new UnicityRelationResponse();
+            unicityRelationResponse.setOfferId(offer.getId());
+            unicityRelationResponse.setOfferKey(offer.getOfferKey());
+            unicityRelationResponse.setRelationId(offer.getIdFromRelationWith(key));
+            offersDto.add(unicityRelationResponse);
         }
 
         OfferUnicityRelationResponse offerUnicityRelationResponse = new OfferUnicityRelationResponse();

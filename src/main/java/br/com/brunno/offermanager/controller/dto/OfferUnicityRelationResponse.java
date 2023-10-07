@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class OfferUnicityRelationResponse {
-    private List<OfferResponseDto> OffersRelated;
+    private List<UnicityRelationResponse> OffersRelated;
 }

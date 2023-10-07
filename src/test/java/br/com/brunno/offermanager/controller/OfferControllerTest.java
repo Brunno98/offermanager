@@ -2,6 +2,7 @@ package br.com.brunno.offermanager.controller;
 
 import br.com.brunno.offermanager.controller.dto.CreateOfferPayload;
 import br.com.brunno.offermanager.domain.entity.Offer;
+import br.com.brunno.offermanager.domain.entity.OfferUnicityRelation;
 import br.com.brunno.offermanager.domain.service.OfferService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OfferControllerTest {
     public static final ObjectMapper OM = new ObjectMapper();
     public static final Long OFFER_ID = 1L;
+    public static final Long OTHER_OFFER_ID = 2L;
     public static final String OFFER_KEY = "aaa";
+    public static final String OTHER_OFFER_KEY = "bbb";
+    public static final String RELATION_ID = "relationId";
+
+
 
     @Autowired
     MockMvc mockMvc;
@@ -58,12 +64,17 @@ public class OfferControllerTest {
     }
 
     @Test
-    void getOfferExclusiveRelationFromOfferKeyShouldReturn200() throws Exception {
-        doReturn(List.of(new Offer(2L, "bbb"))).when(offerService).getRelatedOffersToOffer("aaa");
+    void getOfferUnicityRelationFromOfferKeyShouldReturn200() throws Exception {
+        Offer offer  = aOffer.id(OFFER_ID).offerKey(OFFER_KEY).build();
+        Offer other_offer  = aOffer.id(OTHER_OFFER_ID).offerKey(OTHER_OFFER_KEY).build();
+        OfferUnicityRelation unicityRelation = OfferUnicityRelation.createRelationBetween(offer, other_offer);
+        unicityRelation.setId(RELATION_ID);
+        doReturn(List.of(other_offer)).when(offerService).getRelatedOffersToOffer(OFFER_KEY);
 
-        mockMvc.perform(get("/offer/{key}/unicity-relation", "aaa"))
+        mockMvc.perform(get("/offer/{key}/unicity-relation", OFFER_KEY))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("offersRelated").isArray())
-                .andExpect(jsonPath("offersRelated[0].offerKey").value("bbb"));
+                .andExpect(jsonPath("offersRelated[0].offerKey").value(OTHER_OFFER_KEY))
+                .andExpect(jsonPath("offersRelated[0].relationId").exists());
     }
 }

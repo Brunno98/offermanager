@@ -6,7 +6,9 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 @Getter
 @Setter
@@ -32,5 +34,31 @@ public class Offer {
 
     public boolean hasUnicityRelationWith(String offerKey) {
         return unicityRelations.stream().anyMatch(r -> r.hasOfferKey(offerKey));
+    }
+
+    public String getIdFromRelationWith(String key) {
+        return unicityRelations.stream()
+                .filter(r -> r.hasOfferKey(key))
+                .findFirst()
+                .orElseThrow(
+                        () -> new RuntimeException(format("Offer %s dosn't has relation with %s", this.offerKey, key))
+                )
+                .getId();
+    }
+
+    public void addUnicityRelation(OfferUnicityRelation unicityRelation) {
+        //TODO: Write unity tests
+        if (!unicityRelation.hasOfferKey(this.offerKey)) {
+            String offersRelationsStr = unicityRelation.getOffers().stream()
+                    .map(Offer::getOfferKey).collect(Collectors.joining(", "));
+            throw new RuntimeException(
+                    format("Cannot add unicityRelation in an Offer not related! Offer %s, relationOffers: %s",
+                            this.offerKey, offersRelationsStr));
+        }
+
+        if (this.unicityRelations ==  null)
+            this.unicityRelations = new ArrayList<>();
+
+        this.unicityRelations.add(unicityRelation);
     }
 }
