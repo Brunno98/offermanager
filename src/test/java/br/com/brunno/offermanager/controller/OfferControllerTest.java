@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -76,5 +76,11 @@ public class OfferControllerTest {
                 .andExpect(jsonPath("offersRelated").isArray())
                 .andExpect(jsonPath("offersRelated[0].offerKey").value(OTHER_OFFER_KEY))
                 .andExpect(jsonPath("offersRelated[0].relationId").exists());
+    }
+
+    @Test
+    void deleteUnicityRelationShouldReturnNoContent() throws Exception {
+        mockMvc.perform(delete("/offer/unicity-relation/{id}", RELATION_ID))
+                .andExpect(status().isNoContent());
     }
 }

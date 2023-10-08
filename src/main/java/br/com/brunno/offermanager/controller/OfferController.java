@@ -59,4 +59,10 @@ public class OfferController {
         offerService.createRelation(createRelationsDto.getOffer(), createRelationsDto.getRelateWith());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @DeleteMapping("/unicity-relation/{id}")
+    public ResponseEntity<Void> deleteRelation(@PathVariable(name = "id") String relationId) {
+        offerService.deleteRelation(relationId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

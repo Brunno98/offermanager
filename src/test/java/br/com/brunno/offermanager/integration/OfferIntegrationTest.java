@@ -24,10 +24,10 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class OfferIntegrationTest {
     public static final String UNICITY_RELATION_URI = "/offer/unicity-relation";
-    public static final String CREATE_UNICIITY_RELATION_URI = "/offer/{key}/unicity-relation";
+    public static final String GET_UNICIITY_RELATION_URI = "/offer/{key}/unicity-relation";
     public static final String OFFER_KEY = "aaa";
     public static final String OTHER_OFFER_KEY = "bbb";
 
@@ -81,14 +81,13 @@ public class OfferIntegrationTest {
         assertThat(postReponse.getStatusCode(), equalTo(HttpStatus.CREATED));
 
         ResponseEntity<OfferUnicityRelationResponse> getResponse = restTemplate
-                .getForEntity(CREATE_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
+                .getForEntity(GET_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
 
         assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(getResponse.getBody().getOffersRelated().get(0).getOfferKey(), equalTo(OTHER_OFFER_KEY));
     }
 
     @Test
-    @Disabled("Work in progress...")
     void deleteUnicityRelationFromOffer() {
         ResponseEntity<OfferUnicityRelationResponse> getResponse;
         Offer offer = new Offer(null, OFFER_KEY);
@@ -104,7 +103,7 @@ public class OfferIntegrationTest {
 
         // verify if relation was created
         getResponse = restTemplate
-                .getForEntity(CREATE_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
+                .getForEntity(GET_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
 
         assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(getResponse.getBody().getOffersRelated().get(0).getOfferKey(), equalTo(OTHER_OFFER_KEY));
@@ -115,7 +114,7 @@ public class OfferIntegrationTest {
 
         // verify if relation was deleted
         getResponse = restTemplate
-                .getForEntity(CREATE_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
+                .getForEntity(GET_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
 
         assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(getResponse.getBody().getOffersRelated(), empty());

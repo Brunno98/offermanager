@@ -65,4 +65,9 @@ public class OfferServiceImpl implements OfferService{
             offerUnicityRelationRepository.save(unicityRelation);
         }
     }
+
+    @Override
+    public void deleteRelation(String relationId) {
+        offerUnicityRelationRepository.deleteById(relationId);
+    }
 }

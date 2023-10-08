@@ -12,4 +12,6 @@ public interface OfferService {
     List<Offer> getRelatedOffersToOffer(String key);
 
     void createRelation(String offer, List<String> relatedOffers);
+
+    void deleteRelation(String relationId);
 }
