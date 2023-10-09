@@ -7,7 +7,6 @@ import br.com.brunno.offermanager.controller.dto.OfferUnicityRelationResponse;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.repository.OfferRepository;
 import br.com.brunno.offermanager.domain.repository.OfferUnicityRelationRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +18,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.List;
 import java.util.Map;
 
+import static br.com.brunno.offermanager.matchers.HasUnicityRelationWith.hasUnicityRelationWith;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -58,12 +57,12 @@ public class OfferIntegrationTest {
 
         ResponseEntity<CreateOfferPayload> createResponse = restTemplate.postForEntity("/offer", createPayload, CreateOfferPayload.class);
 
-        assertThat(createResponse.getStatusCode(), equalTo(HttpStatus.CREATED));
+        assertThat(createResponse.getStatusCode(), is(HttpStatus.CREATED));
 
 
         ResponseEntity<OfferResponseDto> getResponse = restTemplate.getForEntity("/offer/{id}", OfferResponseDto.class, Map.of("id", 1));
 
-        assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(getResponse.getStatusCode(), is(HttpStatus.OK));
         assertThat(getResponse.getBody().getId(), equalTo(1L));
         assertThat(getResponse.getBody().getOfferKey(), equalTo(OFFER_KEY));
     }
@@ -78,13 +77,13 @@ public class OfferIntegrationTest {
 
         ResponseEntity<CreateUnicityOfferRelationDto> postReponse = restTemplate
                 .postForEntity(UNICITY_RELATION_URI, createUnicityOfferRelationDto, CreateUnicityOfferRelationDto.class);
-        assertThat(postReponse.getStatusCode(), equalTo(HttpStatus.CREATED));
+        assertThat(postReponse.getStatusCode(), is(HttpStatus.CREATED));
 
         ResponseEntity<OfferUnicityRelationResponse> getResponse = restTemplate
                 .getForEntity(GET_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
 
-        assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(getResponse.getBody().getOffersRelated().get(0).getOfferKey(), equalTo(OTHER_OFFER_KEY));
+        assertThat(getResponse.getStatusCode(), is(HttpStatus.OK));
+        assertThat(getResponse.getBody(), hasUnicityRelationWith(OTHER_OFFER_KEY));
     }
 
     @Test
@@ -105,8 +104,8 @@ public class OfferIntegrationTest {
         getResponse = restTemplate
                 .getForEntity(GET_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
 
-        assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(getResponse.getBody().getOffersRelated().get(0).getOfferKey(), equalTo(OTHER_OFFER_KEY));
+        assertThat(getResponse.getStatusCode(), is(HttpStatus.OK));
+        assertThat(getResponse.getBody(), hasUnicityRelationWith(OTHER_OFFER_KEY));
 
         // delete relation
         String relationId = getResponse.getBody().getOffersRelated().get(0).getRelationId();
@@ -116,9 +115,7 @@ public class OfferIntegrationTest {
         getResponse = restTemplate
                 .getForEntity(GET_UNICIITY_RELATION_URI, OfferUnicityRelationResponse.class, Map.of("key", OFFER_KEY));
 
-        assertThat(getResponse.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(getResponse.getBody().getOffersRelated(), empty());
-
-
+        assertThat(getResponse.getStatusCode(), is(HttpStatus.OK));
+        assertThat(getResponse.getBody(), not(hasUnicityRelationWith(OTHER_OFFER_KEY)));
     }
 }
