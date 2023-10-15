@@ -2,9 +2,7 @@ package br.com.brunno.offermanager.domain.entity;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OfferTest {
     static final String OFFER_KEY = "aaa";
@@ -18,10 +16,7 @@ class OfferTest {
     void givenAOfferWithRelationThenHasRelationWhithOtherOfferShouldReturnTrue() {
         Offer offer = aOffer.build();
         Offer otherOffer = anotherOffer.build();
-        OfferUnicityRelation unicityRelation = new OfferUnicityRelation();
-        unicityRelation.addOffer(offer);
-        unicityRelation.addOffer(otherOffer);
-        offer.setUnicityRelations(List.of(unicityRelation));
+        OfferUnicityRelation.createRelationBetween(offer, otherOffer);
 
         boolean hasUnicityRelation = offer.hasUnicityRelationWith(OTHER_OFFER_KEY);
 
