@@ -18,6 +18,13 @@ services:
       DATABASE: db
     depends_on:
       - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      retries: 3
+      start_period: 10s
+      timeout: 10s
+      interval: 20s
+
 
   db:
     image: postgres:13.11
@@ -28,3 +35,24 @@ services:
     environment:
       POSTGRES_DB: 'postgres'
       POSTGRES_HOST_AUTH_METHOD: 'trust'
+
+  postman:
+    container_name: postmanTests
+    build:
+      context: ./QA/postman
+      dockerfile: Dockerfile
+    command:
+      run "offer manager.postman_collection.json" -k
+      -r htmlextra,cli,json
+      -e "Development - offer manager.postman_environment.json"
+      --reporter-htmlextra-export="reports/offerManagerAPITests.html"
+      --reporter-json-export="reports/offerManagerAPITests.json"
+    volumes:
+      - ./QA/postman:/etc/newman
+    depends_on:
+      offermanager:
+        condition: service_healthy
+      db:
+        condition: service_started
+    networks:
+      - app_network
