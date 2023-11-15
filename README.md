@@ -27,3 +27,19 @@ Nesse sistema é possivel:
 - criar regra de exclusividade de oferta;
 - consultar uma regra de exclusividade;
 - consultar quais ofertas não podem ser assinadas a partir de uma oferta;
+- exluir uma regra de exclusividade;
+
+## QA
+
+### Teste de funcionalidade
+
+Esse projeto possui teste de funcionalidade de API utilizando as ferramentas **postman** e **newman**.  
+As configurações dessas ferramentas ficam no diretório ``QA/postman``.  
+Para executar os testes basta utilizar o docker-compose, através do comando ``docker-compose up``.
+Esse comando irá subir a infraestrura necessária para a aplicação e, por último, subirá o container com o newman e
+exucutará os testes.  
+O resultado dos testes ficará no diretório ``QA/postman/reports``.  
+
+*Dica:* Caso tenha feito alterações no codigo fonte da aplicação, mas essas alterações não estiverem a refletir no 
+container, adicione a flag ``--build`` no comando do docker-compose para buildar uma nova imagem com as alterações 
+realizadas. ex: ``docker-compose up --build``
