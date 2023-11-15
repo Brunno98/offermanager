@@ -134,4 +134,17 @@ public class OfferIntegrationTest {
         getResponse = restTemplate.getForEntity("/offer/{id}", OfferResponseDto.class, Map.of("id", 1));
         assertThat(getResponse.getStatusCode(), is(HttpStatus.NOT_FOUND));
     }
+
+    @Test
+    void CreateOfferThatAlreadyExistsShouldReturnConflict() {
+        populateBaseWithOffers(OFFER_KEY);
+
+        // create offer with key that alredy exists
+        CreateOfferPayload createPayload = new CreateOfferPayload();
+        createPayload.setOfferKey(OFFER_KEY);
+        ResponseEntity<CreateOfferPayload> createResponse = restTemplate.postForEntity("/offer", createPayload, CreateOfferPayload.class);
+
+        // response should be conflict
+        assertThat(createResponse.getStatusCode(), is(HttpStatus.CONFLICT));
+    }
 }

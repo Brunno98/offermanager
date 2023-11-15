@@ -2,6 +2,7 @@ package br.com.brunno.offermanager.controller;
 
 import br.com.brunno.offermanager.controller.dto.*;
 import br.com.brunno.offermanager.domain.entity.Offer;
+import br.com.brunno.offermanager.domain.exceptions.OfferAlreadyExists;
 import br.com.brunno.offermanager.domain.exceptions.OfferNotFoundException;
 import br.com.brunno.offermanager.domain.service.OfferService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,11 @@ public class OfferController {
         BeanUtils.copyProperties(createOffer, offer);
         offerService.create(offer);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @ExceptionHandler(OfferAlreadyExists.class)
+    public ResponseEntity<Map<String, String>> handleOfferAlreadyExists(OfferAlreadyExists ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "offer already exists"));
     }
 
     @GetMapping("/{key}/unicity-relation")

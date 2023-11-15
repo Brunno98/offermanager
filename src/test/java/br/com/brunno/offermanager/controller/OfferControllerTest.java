@@ -3,6 +3,7 @@ package br.com.brunno.offermanager.controller;
 import br.com.brunno.offermanager.controller.dto.CreateOfferPayload;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.entity.OfferUnicityRelation;
+import br.com.brunno.offermanager.domain.exceptions.OfferAlreadyExists;
 import br.com.brunno.offermanager.domain.exceptions.OfferNotFoundException;
 import br.com.brunno.offermanager.domain.service.OfferService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static java.lang.String.format;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -98,5 +98,19 @@ public class OfferControllerTest {
         mockMvc.perform(get("/offer/{id}", OFFER_ID))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("message").value("offer not found"));
+    }
+
+    @Test
+    void createOfferThatAlreadyExistsShouldReturn409() throws Exception {
+        doThrow(new OfferAlreadyExists()).when(offerService).create(any());
+        CreateOfferPayload createOfferPayload = new CreateOfferPayload();
+        createOfferPayload.setOfferKey(OFFER_KEY);
+
+        mockMvc.perform(post("/offer")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(OM.writeValueAsString(createOfferPayload)
+                ))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("message").value("offer already exists"));
     }
 }

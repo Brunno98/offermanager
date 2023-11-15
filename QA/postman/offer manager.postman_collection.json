@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "46038c19-296c-4e34-9ccb-4a2f50879a3c",
+		"_postman_id": "dcf70901-67ba-447d-826b-5396799dc2e4",
 		"name": "offer manager",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25806491"
@@ -15,6 +15,50 @@
 						"exec": [
 							"pm.test(\"Status code is 201\", function () {\r",
 							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"offerKey\": \"{{offer_key_create}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/offer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"offer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create offer when already exists should return conflict",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 409\", function () {\r",
+							"    pm.response.to.have.status(409);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"response should return message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"offer already exists\");\r",
 							"});"
 						],
 						"type": "text/javascript"

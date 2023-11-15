@@ -3,9 +3,12 @@ package br.com.brunno.offermanager.domain.service;
 
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.entity.OfferUnicityRelation;
+import br.com.brunno.offermanager.domain.exceptions.OfferAlreadyExists;
 import br.com.brunno.offermanager.domain.exceptions.OfferNotFoundException;
 import br.com.brunno.offermanager.domain.repository.OfferRepository;
 import br.com.brunno.offermanager.domain.repository.OfferUnicityRelationRepository;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,9 @@ public class OfferServiceImpl implements OfferService{
 
     @Override
     public void create(Offer offer) {
+        if (offerRepository.findByOfferKey(offer.getOfferKey()).isPresent()) {
+            throw new OfferAlreadyExists();
+        }
         offerRepository.save(offer);
     }
 
