@@ -118,4 +118,20 @@ public class OfferIntegrationTest {
         assertThat(getResponse.getStatusCode(), is(HttpStatus.OK));
         assertThat(getResponse.getBody(), not(hasUnicityRelationWith(OTHER_OFFER_KEY)));
     }
+
+    @Test
+    void DeleteOfferShouldRemoverOffer() {
+        populateBaseWithOffers(OFFER_KEY);
+
+        // verify if offer exists
+        ResponseEntity<OfferResponseDto> getResponse = restTemplate.getForEntity("/offer/{id}", OfferResponseDto.class, Map.of("id", 1));
+        assertThat(getResponse.getStatusCode(), is(HttpStatus.OK));
+
+        // delete offer
+        restTemplate.delete("/offer/{id}", Map.of("id", 1));
+
+        // verify if offer was removed
+        getResponse = restTemplate.getForEntity("/offer/{id}", OfferResponseDto.class, Map.of("id", 1));
+        assertThat(getResponse.getStatusCode(), is(HttpStatus.NOT_FOUND));
+    }
 }

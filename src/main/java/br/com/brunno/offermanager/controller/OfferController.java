@@ -2,6 +2,7 @@ package br.com.brunno.offermanager.controller;
 
 import br.com.brunno.offermanager.controller.dto.*;
 import br.com.brunno.offermanager.domain.entity.Offer;
+import br.com.brunno.offermanager.domain.exceptions.OfferNotFoundException;
 import br.com.brunno.offermanager.domain.service.OfferService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("offer")
@@ -64,5 +66,16 @@ public class OfferController {
     public ResponseEntity<Void> deleteRelation(@PathVariable(name = "id") String relationId) {
         offerService.deleteRelation(relationId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOffer(@PathVariable Long id) {
+        offerService.deleteOffer(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(OfferNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleOfferNotFound(OfferNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "offer not found"));
     }
 }
