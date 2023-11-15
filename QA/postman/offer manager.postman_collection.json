@@ -86,6 +86,265 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "get relation from offer without relation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"offersRelated should be empty\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.offersRelated).to.be.an(\"array\").and.be.empty;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/offer/{{offer_key_create}}/unicity-relation",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"offer",
+						"{{offer_key_create}}",
+						"unicity-relation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create other offer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"offerKey\": \"{{some_other_offer}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/offer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"offer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create relation between offers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"offer\": \"{{offer_key_create}}\",\r\n    \"relateWith\": [ \"{{some_other_offer}}\" ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/offer/unicity-relation",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"offer",
+						"unicity-relation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get relation from offer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response should have offers related\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.offersRelated).to.be.an(\"array\").and.not.empty;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Offer related key should be \" + pm.environment.get(\"some_other_offer\"), function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.offersRelated[0].offerKey).to.be.eq(pm.environment.get(\"some_other_offer\"));\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"relationId\", pm.response.json().offersRelated[0]?.relationId)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/offer/{{offer_key_create}}/unicity-relation",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"offer",
+						"{{offer_key_create}}",
+						"unicity-relation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete relation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.collectionVariables.get(\"relationId\")) {\r",
+							"    console.log(\"Variable 'relationId' required for test [\" + pm.info.requestName + \"] is not defined! value: \" + pm.collectionVariables.get(\"relationId\"))\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/offer/unicity-relation/{{relationId}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"offer",
+						"unicity-relation",
+						"{{relationId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleted relation should not be found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var deletedRelationId = pm.collectionVariables.get(\"relationId\");\r",
+							"\r",
+							"pm.test(\"Collection variable [relationId] should be valid\", function () {\r",
+							"    pm.expect(deletedRelationId).to.be.an(\"string\").and.not.empty;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"response should not have relation with id \" + deletedRelationId, function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(!jsonData.offerRelated?.some(relation => relation === deletedRelationId))\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/offer/{{offer_key_create}}/unicity-relation",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"offer",
+						"{{offer_key_create}}",
+						"unicity-relation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete offer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/offer/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"offer",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "relationId",
+			"value": ""
 		}
 	]
 }

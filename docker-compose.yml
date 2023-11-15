@@ -44,7 +44,7 @@ services:
     command:
       run "offer manager.postman_collection.json" -k
       -r htmlextra,cli,json
-      -e "Development - offer manager.postman_environment.json"
+      -e "Container - offer manager.postman_environment.json"
       --reporter-htmlextra-export="reports/offerManagerAPITests.html"
       --reporter-json-export="reports/offerManagerAPITests.json"
     volumes:
