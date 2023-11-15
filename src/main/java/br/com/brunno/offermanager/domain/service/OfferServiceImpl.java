@@ -70,4 +70,9 @@ public class OfferServiceImpl implements OfferService{
     public void deleteRelation(String relationId) {
         offerUnicityRelationRepository.deleteById(relationId);
     }
+
+    @Override
+    public void deleteOffer(Long id) {
+        offerRepository.deleteById(id);
+    }
 }

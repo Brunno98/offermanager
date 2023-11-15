@@ -3,6 +3,7 @@ package br.com.brunno.offermanager.controller;
 import br.com.brunno.offermanager.controller.dto.CreateOfferPayload;
 import br.com.brunno.offermanager.domain.entity.Offer;
 import br.com.brunno.offermanager.domain.entity.OfferUnicityRelation;
+import br.com.brunno.offermanager.domain.exceptions.OfferNotFoundException;
 import br.com.brunno.offermanager.domain.service.OfferService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static java.lang.String.format;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,5 +83,20 @@ public class OfferControllerTest {
     void deleteUnicityRelationShouldReturnNoContent() throws Exception {
         mockMvc.perform(delete("/offer/unicity-relation/{id}", RELATION_ID))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteOfferShouldReturn204() throws Exception {
+        mockMvc.perform(delete("/offer/{id}", OFFER_ID))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void whenOfferNotFoundShouldReturn404() throws Exception {
+        doThrow(new OfferNotFoundException("Offer not found")).when(offerService).getById(OFFER_ID);
+
+        mockMvc.perform(get("/offer/{id}", OFFER_ID))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("message").value("offer not found"));
     }
 }
