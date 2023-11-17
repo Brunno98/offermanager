@@ -38,11 +38,6 @@ public class OfferController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ExceptionHandler(OfferAlreadyExists.class)
-    public ResponseEntity<Map<String, String>> handleOfferAlreadyExists(OfferAlreadyExists ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "offer already exists"));
-    }
-
     @GetMapping("/{key}/unicity-relation")
     public ResponseEntity<OfferUnicityRelationResponse> getOffersUnicityRelatedToOffer(@PathVariable String key) {
         List<Offer> offers = offerService.getRelatedOffersToOffer(key);
@@ -63,7 +58,7 @@ public class OfferController {
     }
 
     @PostMapping("/unicity-relation")
-    public ResponseEntity<?> createRelation(@RequestBody CreateUnicityOfferRelationDto createRelationsDto) {
+    public ResponseEntity<Void> createRelation(@RequestBody CreateUnicityOfferRelationDto createRelationsDto) {
         offerService.createRelation(createRelationsDto.getOffer(), createRelationsDto.getRelateWith());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -80,8 +75,4 @@ public class OfferController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(OfferNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleOfferNotFound(OfferNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "offer not found"));
-    }
 }
